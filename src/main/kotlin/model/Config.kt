@@ -59,7 +59,7 @@ data class Config(
                  * Длина: от 2 до 16 символов. Используемые символы: 0-f.
                  * Для удобства, значения можно сгенерировать командой `i`
                  */
-                val shortIds: List<String> = listOf()
+                val shortIds: MutableList<String> = mutableListOf()
             )
         }
 

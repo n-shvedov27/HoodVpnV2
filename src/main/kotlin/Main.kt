@@ -1,87 +1,56 @@
 package org.example
 
 import kotlinx.serialization.json.Json
+import org.example.delegate.RestartVpnDelegate
+import org.example.delegate.VpnConfigDelegate
+import org.example.delegate.VpnKeysDelegate
 import org.example.model.Config
 import org.telegram.telegrambots.longpolling.TelegramBotsLongPollingApplication
 import java.io.File
 
+private val vpnKeysDelegate = VpnKeysDelegate()
+private val vpnConfigDelegate = VpnConfigDelegate()
+private val restartVpnDelegate = RestartVpnDelegate()
+
 fun main() {
-    initServer()
+    println(createClient("cookie027"))
+    restartVpnDelegate.restartVpn()
 }
 
-private fun generateKeys() {
-    val command = "scripts/generate_keys.sh"
-    val process = Runtime.getRuntime().exec(command)
-
-    while (process.isAlive) {
-        println("Generate keys")
-        Thread.sleep(100)
-    }
-    println("Keys generated")
+private fun writeClientIdToFile(clientName: String, clientId: String) {
+    val clientFile = File("server_config/clients/$clientName")
+    clientFile.createNewFile()
+    clientFile.writeText(clientId)
 }
 
-private fun restartVpn() {
-    val command = "scripts/restart_vpn.sh"
-    val process = Runtime.getRuntime().exec(command)
-
-    while (process.isAlive) {
-        println("Wait restart")
-        Thread.sleep(100)
-    }
-    println("Restarted")
-}
-
-private fun getPublicKey(): String {
-    val prefix = "Public key: "
-    return File("server_config/vless_keys").readLines()
-        .first { it.contains(prefix) }
-        .replace(prefix, "")
-        .trim()
-}
-
-private fun getPrivateKey(): String {
-    val prefix = "Private key: "
-    return File("server_config/vless_keys").readLines()
-        .first { it.contains(prefix) }
-        .replace(prefix, "")
-        .trim()
-}
-
-private fun getUuid(): String {
-    return File("server_config/vless_uuid").readText().trim()
-}
-
-private fun initConfig() {
+private fun writeClientIdToConfig(clientId: String) {
     val json = Json { encodeDefaults = true }
-
-    val config = Config(
-        inbounds = listOf(
-            Config.Inbounds(
-                settings = Config.Inbounds.Settings(
-                    clients = listOf(
-                        Config.Inbounds.Settings.Client(
-                            id = getUuid()
-                        )
-                    )
-                ),
-                streamSettings = Config.Inbounds.StreamSettings(
-                    realitySettings = Config.Inbounds.StreamSettings.RealitySettings(
-                        privateKey = getPrivateKey()
-                    )
-                )
-            )
-        )
-    )
-
+    val configFile = File("/usr/local/etc/xray/config.json")
+    val config = json.decodeFromString<Config>(configFile.readText())
+    config.inbounds.first().streamSettings.realitySettings.shortIds.add(clientId)
     val configString = json.encodeToString(config)
-    val configFile = File("/usr/local/etc/xray/config.json").apply { createNewFile() }
     configFile.writeText(configString)
 }
 
-private fun initServer() {
-    generateKeys()
-    initConfig()
-    restartVpn()
+private fun generateLink(clientId: String, clientName: String) : String {
+    val uuid = vpnKeysDelegate.getUuid()
+    val publicKey = vpnKeysDelegate.getPublicKey()
+    val serverName = vpnConfigDelegate.getServerNames().first()
+    return "vless://$uuid@194.226.169.193:443?type=tcp&security=reality&pbk=$publicKey&fp=chrome&sni=$serverName&sid=$clientId&flow=xtls-rprx-vision#$clientName"
+}
+
+fun createClient(clientName: String) : String {
+    val clientId = getRandomString(6)
+    writeClientIdToFile(clientName = clientName, clientId = clientId)
+    writeClientIdToConfig(clientId = clientId)
+    return generateLink(clientId = clientId, clientName = clientName)
+}
+
+fun getRandomString(length: Int) : String {
+    val allowedChars = ('a'..'z') + ('0'..'9')
+    return (1..length)
+        .map { allowedChars.random() }
+        .joinToString("")
 }
 
 private fun startBot() {
