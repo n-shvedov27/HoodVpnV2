@@ -36,6 +36,7 @@ private fun getPublicKey(): String {
     return File("server_config/vless_keys").readLines()
         .first { it.contains(prefix) }
         .replace(prefix, "")
+        .trim()
 }
 
 private fun getPrivateKey(): String {
@@ -43,10 +44,11 @@ private fun getPrivateKey(): String {
     return File("server_config/vless_keys").readLines()
         .first { it.contains(prefix) }
         .replace(prefix, "")
+        .trim()
 }
 
 private fun getUuid(): String {
-    return File("server_config/vless_uuid").readText()
+    return File("server_config/vless_uuid").readText().trim()
 }
 
 private fun initConfig() {
