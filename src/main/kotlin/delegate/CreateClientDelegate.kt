@@ -21,6 +21,7 @@ class CreateClientDelegate {
 
     private fun writeClientIdToFile(clientName: String, clientId: String) {
         val clientFile = File("clients/$clientName")
+        clientFile.parentFile.mkdirs()
         clientFile.createNewFile()
         clientFile.writeText(clientId)
     }
@@ -44,7 +45,7 @@ class CreateClientDelegate {
 
 
     private fun getRandomString(length: Int) : String {
-        val allowedChars = ('a'..'z') + ('0'..'9')
+        val allowedChars = ('a'..'f') + ('0'..'9')
         return (1..length)
             .map { allowedChars.random() }
             .joinToString("")
