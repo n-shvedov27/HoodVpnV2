@@ -40,7 +40,7 @@ private fun generateLink(clientId: String, clientName: String) : String {
 }
 
 fun createClient(clientName: String) : String {
-    val clientId = getRandomString(6)
+    val clientId = getRandomString(12)
     writeClientIdToFile(clientName = clientName, clientId = clientId)
     writeClientIdToConfig(clientId = clientId)
     return generateLink(clientId = clientId, clientName = clientName)
