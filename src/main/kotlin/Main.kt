@@ -33,7 +33,7 @@ private fun restartVpn() {
 
 private fun getPublicKey(): String {
     val prefix = "Public key: "
-    return File("server_config/vless_uuid").readLines()
+    return File("server_config/vless_keys").readLines()
         .first { it.contains(prefix) }
         .replace(prefix, "")
 }
@@ -46,7 +46,7 @@ private fun getPrivateKey(): String {
 }
 
 private fun getUuid(): String {
-    return File("server_config/vless_keys").readText()
+    return File("server_config/vless_uuid").readText()
 }
 
 private fun initConfig() {
