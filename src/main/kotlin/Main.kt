@@ -7,7 +7,14 @@ fun main() {
 }
 
 private fun initServer() {
+    val command = "scripts/init_server.sh"
+    val process = Runtime.getRuntime().exec(command)
 
+    while (process.isAlive) {
+        println("wait")
+        Thread.sleep(100)
+    }
+    println("done")
 }
 
 private fun startBot() {
