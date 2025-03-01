@@ -20,7 +20,7 @@ class CreateClientDelegate {
     }
 
     private fun writeClientIdToFile(clientName: String, clientId: String) {
-        val clientFile = File("server_config/clients/$clientName")
+        val clientFile = File("clients/$clientName")
         clientFile.createNewFile()
         clientFile.writeText(clientId)
     }
