@@ -40,13 +40,13 @@ private fun getPublicKey(): String {
 
 private fun getPrivateKey(): String {
     val prefix = "Private key: "
-    return File("server_config/vless_uuid").readLines()
+    return File("server_config/vless_keys").readLines()
         .first { it.contains(prefix) }
         .replace(prefix, "")
 }
 
 private fun getUuid(): String {
-    return File("server_config/vless_uuid").readText()
+    return File("server_config/vless_keys").readText()
 }
 
 private fun initConfig() {
@@ -72,7 +72,7 @@ private fun initConfig() {
     )
 
     val configString = json.encodeToString(config)
-    val configFile = File("/usr/local/etc/xray/config.json")
+    val configFile = File("/usr/local/etc/xray/config.json").apply { createNewFile() }
     configFile.writeText(configString)
 }
 
