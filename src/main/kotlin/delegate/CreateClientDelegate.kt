@@ -11,12 +11,22 @@ class CreateClientDelegate {
     private val restartVpnDelegate = RestartVpnDelegate()
 
     fun createClient(clientName: String) : String {
-        val clientId = getRandomString(12)
-        writeClientIdToFile(clientName = clientName, clientId = clientId)
-        writeClientIdToConfig(clientId = clientId)
-        val link = generateLink(clientId = clientId, clientName = clientName)
-        restartVpnDelegate.restartVpn()
-        return link
+        return when (val storedClientId = storedClientId(clientName)) {
+            null -> {
+                val clientId = getRandomString(12)
+                writeClientIdToFile(clientName = clientName, clientId = clientId)
+                writeClientIdToConfig(clientId = clientId)
+                val link = generateLink(clientId = clientId, clientName = clientName)
+                restartVpnDelegate.restartVpn()
+                link
+            }
+            else -> generateLink(clientId = storedClientId, clientName = clientName)
+        }
+    }
+
+    private fun storedClientId(clientName: String): String? {
+        val clientFile = File("clients/$clientName")
+        return if (clientFile.exists()) clientFile.readText().trim() else null
     }
 
     private fun writeClientIdToFile(clientName: String, clientId: String) {
