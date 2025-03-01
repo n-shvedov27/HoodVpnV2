@@ -4,9 +4,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Config(
-    val log: Log,
-    val inbounds: List<Inbounds>,
-    val outbounds: List<Outbounds>,
+    val log: Log = Log(),
+    val inbounds: List<Inbounds> = listOf(Inbounds()),
+    val outbounds: List<Outbounds> = listOf(Outbounds()),
 ) {
 
     @Serializable
@@ -29,7 +29,10 @@ data class Config(
         ) {
             @Serializable
             data class Client(
-                val id: String = "be757097-a612-4299-a723-85bccd9bb8a3",
+                /**
+                 * здесь вставить uuid, сгенерированный на шаге №2
+                 */
+                val id: String = "",
                 val flow: String = "xtls-rprx-vision",
             )
         }
@@ -47,10 +50,16 @@ data class Config(
                     "yahoo.com",
                     "www.yahoo.com"
                 ),
-                val privateKey: String = "YFTb_C9PvLteXDCRlQWYSVzdN2auXPZWvclCabUG2kM",
-                val shortIds: List<String> = listOf(
-                    "4a486b04bbdf"
-                )
+                /**
+                 * Вставить приватный ключ (Private key), созданный на шаге №2
+                 */
+                val privateKey: String = "",
+                /**
+                 * Список уникальных коротких идентификаторов, доступных клиентам, чтобы их различать
+                 * Длина: от 2 до 16 символов. Используемые символы: 0-f.
+                 * Для удобства, значения можно сгенерировать командой `i`
+                 */
+                val shortIds: List<String> = listOf()
             )
         }
 
