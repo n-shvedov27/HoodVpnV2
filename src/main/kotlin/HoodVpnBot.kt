@@ -20,7 +20,9 @@ class HoodVpnBot : LongPollingSingleThreadUpdateConsumer {
     )
 
     override fun consume(update: Update) {
-        val handler = handlers.firstOrNull { it.canHandle(update) }
+        val handler = handlers.firstOrNull {
+            runCatching { it.canHandle(update) }.getOrDefault(false)
+        }
         when (handler) {
             null -> unknownCommandHandler.handle(update)
             else -> handler.handle(update)
