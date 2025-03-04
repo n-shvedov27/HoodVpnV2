@@ -2,6 +2,7 @@ package org.example.handler
 
 import org.example.base.UpdateHandler
 import org.example.delegate.CreateClientDelegate
+import org.telegram.telegrambots.meta.api.methods.ParseMode
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup
@@ -32,6 +33,16 @@ class StartHandler(
         Выберите ваше устройство:
     """.trimIndent()
 
+    private fun profileText(link: String): String {
+        return """
+            Вы используете Hood Vpn ✨
+
+            Ваш ключ:
+
+            `$link`
+        """.trimIndent()
+    }
+
     private val selectDeviceText = "Выберите ваше устройство:"
 
     private val androidButton = InlineKeyboardButton("Android").apply {
@@ -61,16 +72,50 @@ class StartHandler(
     }
 
     override fun canHandle(update: Update): Boolean {
-        return update.message?.text == "/start"
+        val availableCommands = listOf(
+            "/start",
+            "Профиль",
+            "Установить VPN"
+        )
+        return availableCommands.contains(update.message?.text)
     }
 
     override fun handle(update: Update) {
+        when (update.message.text) {
+            "/start" -> onStartCommand(update)
+            "Профиль" -> onProfileCommand(update)
+            "Установить VPN" -> onInstallVpnCommand(update)
+        }
+    }
+
+    private fun onStartCommand(update: Update) {
         createClientDelegate.createClient(update.message.from.userName)
         val welcomeTextMessage = SendMessage(update.message.chatId.toString(), welcomeText).apply {
             replyMarkup = menuKeyboard
         }
         client.execute(welcomeTextMessage)
 
+        val selectDeviceMessage = SendMessage(update.message.chatId.toString(), selectDeviceText).apply {
+            replyMarkup = selectDevicesKeyboard
+        }
+        client.execute(selectDeviceMessage)
+    }
+
+    private fun onProfileCommand(update: Update) {
+        val link = createClientDelegate.createClient(update.message.from.userName)
+//        val link = "vless://58df263e-d00b-4d41-9ac5-043d895d2720@194.226.169.193:443?type=tcp&security=reality&pbk=NwIqni9kqF9IhpSXXPqUQbPg-1MfNJJ3KY8dWc8V-lM&fp=chrome&sni=yahoo.com&sid=cf3ede39d7d7&flow=xtls-rprx-vision#cookie027"
+
+        val selectDeviceMessage = SendMessage(
+            update.message.chatId.toString(),
+            profileText(link)
+        ).apply {
+            parseMode = ParseMode.MARKDOWN
+            disableWebPagePreview()
+        }
+        client.execute(selectDeviceMessage)
+    }
+
+    private fun onInstallVpnCommand(update: Update) {
         val selectDeviceMessage = SendMessage(update.message.chatId.toString(), selectDeviceText).apply {
             replyMarkup = selectDevicesKeyboard
         }
