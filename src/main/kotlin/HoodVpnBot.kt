@@ -23,6 +23,7 @@ class HoodVpnBot : LongPollingSingleThreadUpdateConsumer {
         val handler = handlers.firstOrNull {
             runCatching { it.canHandle(update) }.getOrDefault(false)
         }
+        println("handler: $handler")
         when (handler) {
             null -> unknownCommandHandler.handle(update)
             else -> handler.handle(update)
