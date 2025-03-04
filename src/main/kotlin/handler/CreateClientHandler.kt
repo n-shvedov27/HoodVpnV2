@@ -53,7 +53,7 @@ class CreateClientHandler (
     }
 
     private fun handleInstallAndroidCommand(update: Update) {
-        val connectLink = createClientDelegate.createClient(update.message.from.userName)
+        val connectLink = createClientDelegate.createClient(update.callbackQuery.from.userName)
 //        val connectLink = "vless://58df263e-d00b-4d41-9ac5-043d895d2720@194.226.169.193:443?type=tcp&security=reality&pbk=NwIqni9kqF9IhpSXXPqUQbPg-1MfNJJ3KY8dWc8V-lM&fp=chrome&sni=yahoo.com&sid=cf3ede39d7d7&flow=xtls-rprx-vision#cookie027"
 
         val instructionsMessage = SendMessage(
@@ -75,7 +75,7 @@ class CreateClientHandler (
     }
 
     private fun handleInstallIosCommand(update: Update) {
-        val connectLink = createClientDelegate.createClient(update.message.from.userName)
+        val connectLink = createClientDelegate.createClient(update.callbackQuery.from.userName)
 //        val connectLink = "vless://58df263e-d00b-4d41-9ac5-043d895d2720@194.226.169.193:443?type=tcp&security=reality&pbk=NwIqni9kqF9IhpSXXPqUQbPg-1MfNJJ3KY8dWc8V-lM&fp=chrome&sni=yahoo.com&sid=cf3ede39d7d7&flow=xtls-rprx-vision#cookie027"
 
         val instructionsMessage = SendMessage(
